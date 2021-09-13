@@ -1,5 +1,6 @@
 package fr.uni.prjpidgeon
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -19,7 +20,6 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
 
 
     private lateinit var sensorManager: SensorManager
-    private var sensor: Sensor? = null
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
     private val rotationMatrix = FloatArray(9)
@@ -73,6 +73,14 @@ class MainActivity : AppCompatActivity(), SensorEventListener {
             binding.xAxis.text = event.values[0].toString()
             binding.yAxis.text = event.values[1].toString()
             binding.zAxis.text = event.values[2].toString()
+
+            ObjectAnimator.ofFloat(binding.centerCross, "translationX", + pitchEstimate * 200).apply {
+                start()
+            }
+            ObjectAnimator.ofFloat(binding.centerCross, "translationY", - rollEstimate * 200).apply {
+                start()
+            }
+
 
         } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
             System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.size)
