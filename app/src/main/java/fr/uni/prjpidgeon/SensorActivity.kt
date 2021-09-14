@@ -9,10 +9,7 @@ import android.hardware.SensorManager
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import fr.uni.prjpidgeon.databinding.ActivityMainBinding
-import kotlin.math.PI
-import kotlin.math.asin
-import kotlin.math.atan
-import kotlin.math.atan2
+import kotlin.math.*
 
 abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
@@ -66,11 +63,14 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
             onRollChanged(estRoll)
 
         } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            val D = 0.04416F
             val xmag = event.values[0]
             val ymag = event.values[1]
             val zmag = event.values[2]
 
-            estYaw = atan2(-ymag, xmag)
+            estYaw = D * atan(cos(estRoll)*ymag - sin(estRoll)*zmag
+                    / cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
+                    + cos(estRoll)*sin(estPitch)*zmag)
             onYawChanged(estYaw)
         }
     }
