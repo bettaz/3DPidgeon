@@ -51,19 +51,19 @@ class MainActivity : SensorActivity() {
     }
 
     override fun onYawChanged(yaw: Float) {
-        binding.yaw.text = yaw.toString()
-
+        var estYaw = -(yaw * 180f / PI).toFloat()
+        binding.yaw.text = estYaw.toString()
         ObjectAnimator.ofFloat(
             binding.compass,
             "rotation",
-            -(yaw / PI * 180f).toFloat()
+            estYaw
         ).apply { start() }
     }
 
     override fun onAcelerometerChanged(acc: FloatArray) {
         binding.xAxis.text = acc[0].toString()
-        binding.xAxis.text = acc[1].toString()
-        binding.xAxis.text = acc[2].toString()
+        binding.yAxis.text = acc[1].toString()
+        binding.zAxis.text = acc[2].toString()
     }
 
 }
