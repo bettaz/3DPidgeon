@@ -61,9 +61,9 @@ class MainActivity : SensorActivity() {
     }
 
     override fun onAcelerometerChanged(acc: FloatArray) {
-        val xmag = acc[0]
-        val ymag = acc[1]
-        val zmag = acc[2]
+        binding.xAxis.text = acc[0]
+        binding.xAxis.text = acc[1]
+        binding.xAxis.text = acc[2]
     }
 
 }
