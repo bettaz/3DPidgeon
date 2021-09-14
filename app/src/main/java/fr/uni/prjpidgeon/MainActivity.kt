@@ -61,9 +61,9 @@ class MainActivity : SensorActivity() {
     }
 
     override fun onAcelerometerChanged(acc: FloatArray) {
-        binding.xAxis.text = acc[0]
-        binding.xAxis.text = acc[1]
-        binding.xAxis.text = acc[2]
+        binding.xAxis.text = acc[0].toString()
+        binding.xAxis.text = acc[1].toString()
+        binding.xAxis.text = acc[2].toString()
     }
 
 }
