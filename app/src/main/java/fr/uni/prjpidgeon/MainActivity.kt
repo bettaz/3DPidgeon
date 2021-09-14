@@ -18,105 +18,52 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 
 
-class MainActivity : AppCompatActivity(), SensorEventListener {
+class MainActivity : SensorActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
-
-    private lateinit var sensorManager: SensorManager
-    private val accelerometerReading = FloatArray(3)
-    private val magnetometerReading = FloatArray(3)
-    private var estPitch = 0f
-    private var estRoll = 0f
-    private var estYaw = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
     }
 
-    override fun onResume() {
-        super.onResume()
 
-        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also { accelerometer ->
-            sensorManager.registerListener(
-                this,
-                accelerometer,
-                SensorManager.SENSOR_DELAY_NORMAL,
-                SensorManager.SENSOR_DELAY_UI
-            )
-        }
-        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also { magneticField ->
-            sensorManager.registerListener(
-                this,
-                magneticField,
-                SensorManager.SENSOR_DELAY_NORMAL,
-                SensorManager.SENSOR_DELAY_UI
-            )
-        }
+    override fun onPitchChanged(pitch: Float) {
+        binding.pitch.text = pitch.toString()
+
+        ObjectAnimator.ofFloat(
+            binding.centerCross,
+            "translationX",
+            + pitch * 200
+        ).apply { start() }
     }
 
-    override fun onPause() {
-        super.onPause()
+    override fun onRollChanged(roll: Float) {
+        binding.roll.text = roll.toString()
 
-        // Don't receive any more updates from either sensor.
-        sensorManager.unregisterListener(this)
+        ObjectAnimator.ofFloat(
+            binding.centerCross,
+            "translationY",
+            - roll * 200
+        ).apply { start() }
     }
 
-    override fun onSensorChanged(event: SensorEvent?) {
-        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            estPitch = asin(event.values[0]/9.81f)
-            estRoll = atan(event.values[1]/event.values[2])
+    override fun onYawChanged(yaw: Float) {
+        binding.yaw.text = yaw.toString()
 
-            binding.pitch.text = estPitch.toString()
-            binding.roll.text = estRoll.toString()
-
-            binding.xAxis.text = event.values[0].toString()
-            binding.yAxis.text = event.values[1].toString()
-            binding.zAxis.text = event.values[2].toString()
-
-            ObjectAnimator.ofFloat(
-                binding.centerCross,
-                "translationX",
-                + estPitch * 200
-            ).apply { start() }
-
-            ObjectAnimator.ofFloat(
-                binding.centerCross,
-                "translationY",
-                - estRoll * 200
-            ).apply { start() }
-
-        } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
-            val xmag = event.values[0]
-            val ymag = event.values[1]
-            val zmag = event.values[2]
-
-            estYaw = atan2(-ymag, xmag)
-            /*estYaw =  when {
-                xmag < 0f -> (180f - atan(xmag / ymag))
-                xmag > 0f && ymag < 0f -> -atan(ymag/xmag)
-                xmag > 0f && ymag > 0f -> 360f - atan(ymag/xmag)
-                xmag == 0f && ymag < 0f -> 90f
-                else -> 270f
-            }*/
-
-            binding.yaw.text = estYaw.toString()
-
-            ObjectAnimator.ofFloat(
-                binding.compass,
-                "rotation",
-                -(estYaw / PI * 180f).toFloat()).apply { start() }
-        }
+        ObjectAnimator.ofFloat(
+            binding.compass,
+            "rotation",
+            -(yaw / PI * 180f).toFloat()
+        ).apply { start() }
     }
 
-    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-        // Do something here if sensor accuracy changes.
-        // You must implement this callback in your code.
+    override fun onAcelerometerChanged(acc: FloatArray) {
+        val xmag = acc[0]
+        val ymag = acc[1]
+        val zmag = acc[2]
     }
-
 
 }
