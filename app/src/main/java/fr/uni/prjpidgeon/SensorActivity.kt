@@ -57,27 +57,31 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
         sensorManager.unregisterListener(this)
     }
 
+    var lastUpdateTime = System.currentTimeMillis()
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            val D = 0.04416F
-            estPitch = asin(event.values[0]/9.81f)
-            estRoll = atan(event.values[1]/event.values[2])
-            estYaw = D - atan((cos(estRoll)*ymag - sin(estRoll)*zmag)
-                    / (cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
-                    + cos(estRoll)*sin(estPitch)*zmag))
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastUpdateTime >= 150) {
+            if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
+                val D = 0.04416F
+                estPitch = asin(event.values[0]/9.81f)
+                estRoll = atan(event.values[1]/event.values[2])
+                estYaw = D - atan((cos(estRoll)*ymag - sin(estRoll)*zmag)
+                        / (cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
+                        + cos(estRoll)*sin(estPitch)*zmag))
 
-            onAcelerometerChanged(event.values)
-            onPitchChanged(estPitch)
-            onRollChanged(estRoll)
+                onAcelerometerChanged(event.values)
+                onPitchChanged(estPitch)
+                onRollChanged(estRoll)
+                onYawChanged(estYaw)
 
-        }
-        if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            }
+            if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
 
-            xmag = event.values[0]
-            ymag = event.values[1]
-            zmag = event.values[2]
-
-            onYawChanged(estYaw)
+                xmag = event.values[0]
+                ymag = event.values[1]
+                zmag = event.values[2]
+            }
+            lastUpdateTime = currentTime
         }
     }
 
