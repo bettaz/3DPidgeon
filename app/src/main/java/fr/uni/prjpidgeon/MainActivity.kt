@@ -56,7 +56,7 @@ class MainActivity : SensorActivity() {
         ObjectAnimator.ofFloat(
             binding.compass,
             "rotation",
-            estYaw
+            if(estYaw.isFinite()) estYaw else 0f
         ).apply { start() }
     }
 
