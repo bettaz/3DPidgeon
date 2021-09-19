@@ -36,7 +36,7 @@ class MainActivity : SensorActivity() {
         ObjectAnimator.ofFloat(
             binding.centerCross,
             "translationX",
-            + pitch * 200
+            if(pitch.isFinite()) pitch * 200 else 200f
         ).apply { start() }
     }
 
@@ -46,7 +46,7 @@ class MainActivity : SensorActivity() {
         ObjectAnimator.ofFloat(
             binding.centerCross,
             "translationY",
-            - roll * 200
+            if(roll.isFinite()) - roll * 200 else 200f
         ).apply { start() }
     }
 
