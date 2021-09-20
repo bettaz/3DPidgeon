@@ -26,12 +26,10 @@ class MainActivity : SensorActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
     }
-
-
+    
     override fun onPitchChanged(pitch: Float) {
-        binding.pitch.text = pitch.toString()
+        binding.pitch.text = Math.toDegrees(pitch.toDouble()).toString()
 
         ObjectAnimator.ofFloat(
             binding.centerCross,
@@ -41,7 +39,7 @@ class MainActivity : SensorActivity() {
     }
 
     override fun onRollChanged(roll: Float) {
-        binding.roll.text = roll.toString()
+        binding.roll.text = Math.toDegrees(roll.toDouble()).toString()
 
         ObjectAnimator.ofFloat(
             binding.centerCross,
@@ -51,13 +49,16 @@ class MainActivity : SensorActivity() {
     }
 
     override fun onYawChanged(yaw: Float) {
-        binding.yaw.text = yaw.toString()
+        if (yaw.isFinite()) {
+            binding.yaw.text = yaw.toString()
 
-        ObjectAnimator.ofFloat(
-            binding.compass,
-            "rotation",
-            if (yaw.isFinite()) (yaw / PI * 180f).toFloat() else 0f
-        ).apply { start() }
+            ObjectAnimator.ofFloat(
+                binding.compass,
+                "rotation",
+                yaw
+            ).apply { start() }
+            oldYaw = yaw
+        }
     }
 
     override fun onAcelerometerChanged(acc: FloatArray) {

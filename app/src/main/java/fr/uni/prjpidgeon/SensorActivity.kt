@@ -61,7 +61,6 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
             onRollChanged(estRoll)
 
         } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED) {
-            val D = 0.04416F
             val xmag = event.values[0] / 1000
             val ymag = event.values[1] / 1000
             val zmag = event.values[2] / 1000
@@ -71,10 +70,11 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
             val a = cos(estRoll)*ymag - sin(estRoll)*zmag
             val b = cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
             + cos(estRoll)*sin(estPitch)*zmag
-            var estYawm = atan(a/b)
+            var estYawm = atan2(a,b)
             estYaw = D - estYawm
 
-            onYawChanged(estYaw)
+            val yawDeg = Math.toDegrees(estYaw.toDouble()).toFloat() + 180
+            onYawChanged(yawDeg)
         }
     }
 
@@ -91,6 +91,8 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
     companion object {
         const val TAG = "SensorActivity"
+        const val D = 0.04416F
+
     }
 
 }
