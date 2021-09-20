@@ -36,7 +36,7 @@ class MainActivity : SensorActivity() {
         ObjectAnimator.ofFloat(
             binding.centerCross,
             "translationX",
-            if(pitch.isFinite()) pitch * 200 else 200f
+            if(pitch.isFinite()) - pitch * 200 else 200f
         ).apply { start() }
     }
 
@@ -46,7 +46,7 @@ class MainActivity : SensorActivity() {
         ObjectAnimator.ofFloat(
             binding.centerCross,
             "translationY",
-            if(roll.isFinite()) - roll * 200 else 200f
+            if(roll.isFinite()) roll * 200 else 200f
         ).apply { start() }
     }
 
@@ -56,14 +56,14 @@ class MainActivity : SensorActivity() {
         ObjectAnimator.ofFloat(
             binding.compass,
             "rotation",
-            -(yaw / PI * 180f).toFloat()
+            if (yaw.isFinite()) (yaw / PI * 180f).toFloat() else 0f
         ).apply { start() }
     }
 
     override fun onAcelerometerChanged(acc: FloatArray) {
         binding.xAxis.text = acc[0].toString()
-        binding.xAxis.text = acc[1].toString()
-        binding.xAxis.text = acc[2].toString()
+        binding.yAxis.text = acc[1].toString()
+        binding.zAxis.text = acc[2].toString()
     }
 
 }

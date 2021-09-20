@@ -7,6 +7,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import fr.uni.prjpidgeon.databinding.ActivityMainBinding
 import kotlin.math.*
@@ -14,8 +15,6 @@ import kotlin.math.*
 abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
-    private val accelerometerReading = FloatArray(3)
-    private val magnetometerReading = FloatArray(3)
     private var estPitch = 0f
     private var estRoll = 0f
     private var estYaw = 0f
@@ -36,7 +35,7 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
                 SensorManager.SENSOR_DELAY_UI
             )
         }
-        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also { magneticField ->
+        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED)?.also { magneticField ->
             sensorManager.registerListener(
                 this,
                 magneticField,
@@ -55,22 +54,26 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            estPitch = asin(event.values[0]/9.81f)
-            estRoll = atan(event.values[1]/event.values[2])
+            estPitch = - asin(event.values[0]/9.81f)
+            estRoll = - atan(event.values[1]/event.values[2])
 
-            onAcelerometerChanged(event.values)
             onPitchChanged(estPitch)
             onRollChanged(estRoll)
 
-        } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
+        } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED) {
             val D = 0.04416F
-            val xmag = event.values[0]
-            val ymag = event.values[1]
-            val zmag = event.values[2]
+            val xmag = event.values[0] / 1000
+            val ymag = event.values[1] / 1000
+            val zmag = event.values[2] / 1000
 
-            estYaw = D * atan(cos(estRoll)*ymag - sin(estRoll)*zmag
-                    / cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
-                    + cos(estRoll)*sin(estPitch)*zmag)
+            onAcelerometerChanged(event.values)
+
+            val a = cos(estRoll)*ymag - sin(estRoll)*zmag
+            val b = cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
+            + cos(estRoll)*sin(estPitch)*zmag
+            var estYawm = atan(a/b)
+            estYaw = D - estYawm
+
             onYawChanged(estYaw)
         }
     }
@@ -85,5 +88,9 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
     abstract fun onYawChanged(pitch: Float)
 
     abstract fun onAcelerometerChanged(acc: FloatArray)
+
+    companion object {
+        const val TAG = "SensorActivity"
+    }
 
 }
