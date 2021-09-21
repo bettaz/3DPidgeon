@@ -69,12 +69,13 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
             onRollChanged(estRoll)
             onAcelerometerChanged(event.values)
 
-        } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED) {
-            val xmag = event.values[0] / 1000
-            val ymag = event.values[1] / 1000
-            val zmag = event.values[2] / 1000
+        } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED || event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            var isCalibrated = event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD
+            val xmag = event.values[0] / 1000000
+            val ymag = event.values[1] / 1000000
+            val zmag = event.values[2] / 1000000
 
-            onAcelerometerChanged(event.values)
+
 
             val a = cos(estRoll)*ymag - sin(estRoll)*zmag
             val b = cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
