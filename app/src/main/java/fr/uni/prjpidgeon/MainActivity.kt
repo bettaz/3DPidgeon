@@ -55,7 +55,7 @@ class MainActivity : SensorActivity() {
             ObjectAnimator.ofFloat(
                 binding.compass,
                 "rotation",
-                (yaw+63)
+                (yaw+78)
             ).apply { start() }
         }
     }
