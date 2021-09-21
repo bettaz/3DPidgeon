@@ -59,16 +59,20 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
         // Don't receive any more updates from either sensor.
         sensorManager.unregisterListener(this)
     }
-
+    var lastUpdateTime = System.currentTimeMillis()
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-            estPitch = - asin(event.values[0]/9.81f)
-            estRoll = - atan(event.values[1]/event.values[2])
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastUpdateTime >= 150) {
+            if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
+                estPitch = - asin(event.values[0]/9.81f)
+                estRoll = - atan(event.values[1]/event.values[2])
 
-            onPitchChanged(estPitch)
-            onRollChanged(estRoll)
-            onAcelerometerChanged(event.values)
+                onPitchChanged(estPitch)
+                onRollChanged(estRoll)
+                onAcelerometerChanged(event.values)
+                lastUpdateTime = currentTime
 
+            }
         } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED || event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
             var isCalibrated = event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD
             val xmag = event.values[0] / 1000000
@@ -85,6 +89,7 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
             val yawDeg = Math.toDegrees(estYaw.toDouble()).toFloat()
             onYawChanged(yawDeg, isCalibrated)
+            lastUpdateTime = currentTime
         }
     }
 
