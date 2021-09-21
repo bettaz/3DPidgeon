@@ -48,16 +48,15 @@ class MainActivity : SensorActivity() {
         ).apply { start() }
     }
 
-    override fun onYawChanged(yaw: Float) {
-        if (yaw.isFinite()) {
-            binding.yaw.text = yaw.toString()
+    override fun onYawChanged(yaw: Float, isCalibrated: Boolean) {
+        if (yaw.isFinite() && binding.calibratedSwitch.isChecked == isCalibrated ) {
+            binding.yaw.text = (yaw).toString()
 
             ObjectAnimator.ofFloat(
                 binding.compass,
                 "rotation",
-                yaw
+                (yaw+63)
             ).apply { start() }
-            oldYaw = yaw
         }
     }
 

@@ -43,6 +43,14 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
                 SensorManager.SENSOR_DELAY_UI
             )
         }
+        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also { magneticField ->
+            sensorManager.registerListener(
+                this,
+                magneticField,
+                SensorManager.SENSOR_DELAY_NORMAL,
+                SensorManager.SENSOR_DELAY_UI
+            )
+        }
     }
 
     override fun onPause() {
@@ -59,6 +67,7 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
             onPitchChanged(estPitch)
             onRollChanged(estRoll)
+            onAcelerometerChanged(event.values)
 
         } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED) {
             val xmag = event.values[0] / 1000
@@ -73,8 +82,8 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
             var estYawm = atan2(a,b)
             estYaw = D - estYawm
 
-            val yawDeg = Math.toDegrees(estYaw.toDouble()).toFloat() + 180
-            onYawChanged(yawDeg)
+            val yawDeg = Math.toDegrees(estYaw.toDouble()).toFloat()
+            onYawChanged(yawDeg, isCalibrated)
         }
     }
 
@@ -85,7 +94,7 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
     abstract fun onPitchChanged(pitch: Float)
     abstract fun onRollChanged(pitch: Float)
-    abstract fun onYawChanged(pitch: Float)
+    abstract fun onYawChanged(pitch: Float, isCalibrated:Boolean)
 
     abstract fun onAcelerometerChanged(acc: FloatArray)
 
