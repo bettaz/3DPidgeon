@@ -33,8 +33,8 @@ class MainActivity : SensorActivity() {
 
         ObjectAnimator.ofFloat(
             binding.centerCross,
-            "translationX",
-            if(pitch.isFinite()) - pitch * 200 else 200f
+            "translationY",
+            if(pitch.isFinite()) pitch * 200 else 200f
         ).apply { start() }
     }
 
@@ -43,7 +43,7 @@ class MainActivity : SensorActivity() {
 
         ObjectAnimator.ofFloat(
             binding.centerCross,
-            "translationY",
+            "translationX",
             if(roll.isFinite()) roll * 200 else 200f
         ).apply { start() }
     }
@@ -55,7 +55,7 @@ class MainActivity : SensorActivity() {
             ObjectAnimator.ofFloat(
                 binding.compass,
                 "rotation",
-                (yaw+78)
+                (yaw)
             ).apply { start() }
         }
     }
