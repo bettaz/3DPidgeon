@@ -18,6 +18,9 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
     private var estPitch = 0f
     private var estRoll = 0f
     private var estYaw = 0f
+    private var andPitch = 0f
+    private var andROll = 0f
+    private var andYaw = 0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,17 +65,16 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
     var lastUpdateTime = System.currentTimeMillis()
     override fun onSensorChanged(event: SensorEvent?) {
         val currentTime = System.currentTimeMillis()
-        if (currentTime - lastUpdateTime >= 150) {
+
             if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
-                estPitch = - asin(event.values[0]/9.81f)
-                estRoll = - atan(event.values[1]/event.values[2])
-
-                onPitchChanged(estPitch)
-                onRollChanged(estRoll)
-                onAcelerometerChanged(event.values)
-                lastUpdateTime = currentTime
-
-            }
+                estRoll = - asin(event.values[0]/9.81f)
+                estPitch = - atan(event.values[1]/event.values[2])
+                if (currentTime - lastUpdateTime >= 100) {
+                    onPitchChanged(estPitch)
+                    onRollChanged(estRoll)
+                    onAcelerometerChanged(event.values)
+                    lastUpdateTime = currentTime
+                }
         } else if (event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED || event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD) {
             var isCalibrated = event?.sensor?.type == Sensor.TYPE_MAGNETIC_FIELD
             val xmag = event.values[0] / 1000000
@@ -81,15 +83,14 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
 
 
 
-            val a = cos(estRoll)*ymag - sin(estRoll)*zmag
-            val b = cos(estPitch)*xmag + sin(estRoll)*sin(estPitch)*ymag
-            + cos(estRoll)*sin(estPitch)*zmag
+            val a = cos(estPitch)*ymag - sin(estPitch)*zmag
+            val b = cos(estRoll)*xmag + sin(estPitch)*sin(estRoll)*ymag
+            + cos(estPitch)*sin(estRoll)*zmag
             var estYawm = atan2(a,b)
             estYaw = D - estYawm
 
             val yawDeg = Math.toDegrees(estYaw.toDouble()).toFloat()
             onYawChanged(yawDeg, isCalibrated)
-            lastUpdateTime = currentTime
         }
     }
 
