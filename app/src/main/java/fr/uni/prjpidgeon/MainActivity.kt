@@ -36,14 +36,14 @@ class MainActivity : SensorActivity() {
 
     override fun onOrientationChanged(androidOrientation: FloatArray, orientation: FloatArray, accReads: FloatArray) {
 
-        binding.roll.text = Math.toDegrees(orientation[2].toDouble()).toString()
+        binding.roll.text = Math.toDegrees(-orientation[1].toDouble()).toString()
         ObjectAnimator.ofFloat(
             binding.centerCross,
             "translationY",
-            if(orientation[2].isFinite()) sin(orientation[2]) * 150 else 150f
+            if(orientation[2].isFinite()) sin(-orientation[2]) * 150 else 150f
         ).apply { start() }
 
-        binding.pitch.text = Math.toDegrees(orientation[1].toDouble()).toString()
+        binding.pitch.text = ((Math.toDegrees(-orientation[2].toDouble())+180)%360).toString()
         ObjectAnimator.ofFloat(
             binding.centerCross,
             "translationX",
@@ -51,12 +51,12 @@ class MainActivity : SensorActivity() {
         ).apply { start() }
 
         if (orientation[2].isFinite()) {
-            binding.yaw.text = (orientation[0]).toString()
+            binding.yaw.text = (Math.toDegrees(orientation[0].toDouble())).toString()
 
             ObjectAnimator.ofFloat(
                 binding.compass,
                 "rotation",
-                (orientation[0])
+                (Math.toDegrees(-orientation[0].toDouble())-90).toFloat()
             ).apply { start() }
         }
         binding.rollDiff.text = (orientation[0]-androidOrientation[0]).toString()
