@@ -27,43 +27,41 @@ class MainActivity : SensorActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
     }
-    
-    override fun onPitchChanged(pitch: Float) {
-        binding.pitch.text = Math.toDegrees(pitch.toDouble()).toString()
-
-        ObjectAnimator.ofFloat(
-            binding.centerCross,
-            "translationY",
-            if(pitch.isFinite()) pitch * 200 else 200f
-        ).apply { start() }
-    }
-
-    override fun onRollChanged(roll: Float) {
-        binding.roll.text = Math.toDegrees(roll.toDouble()).toString()
-
-        ObjectAnimator.ofFloat(
-            binding.centerCross,
-            "translationX",
-            if(roll.isFinite()) roll * 200 else 200f
-        ).apply { start() }
-    }
-
-    override fun onYawChanged(yaw: Float, isCalibrated: Boolean) {
-        if (yaw.isFinite() && binding.calibratedSwitch.isChecked == isCalibrated ) {
-            binding.yaw.text = (yaw).toString()
-
-            ObjectAnimator.ofFloat(
-                binding.compass,
-                "rotation",
-                (yaw)
-            ).apply { start() }
-        }
-    }
 
     override fun onAcelerometerChanged(acc: FloatArray) {
         binding.xAxis.text = acc[0].toString()
         binding.yAxis.text = acc[1].toString()
         binding.zAxis.text = acc[2].toString()
+    }
+
+    override fun onOrientationChanged(androidOrientation: FloatArray, orientation: FloatArray, accReads: FloatArray) {
+
+        binding.roll.text = Math.toDegrees(orientation[2].toDouble()).toString()
+        ObjectAnimator.ofFloat(
+            binding.centerCross,
+            "translationY",
+            if(orientation[2].isFinite()) sin(orientation[2]) * 150 else 150f
+        ).apply { start() }
+
+        binding.pitch.text = Math.toDegrees(orientation[1].toDouble()).toString()
+        ObjectAnimator.ofFloat(
+            binding.centerCross,
+            "translationX",
+            if(orientation[1].isFinite()) sin(orientation[1]) * 150 else 150f
+        ).apply { start() }
+
+        if (orientation[2].isFinite()) {
+            binding.yaw.text = (orientation[0]).toString()
+
+            ObjectAnimator.ofFloat(
+                binding.compass,
+                "rotation",
+                (orientation[0])
+            ).apply { start() }
+        }
+        binding.rollDiff.text = (orientation[0]-androidOrientation[0]).toString()
+        binding.pitchDiff.text = (orientation[1]-androidOrientation[1]).toString()
+        binding.yawDiff.text = (orientation[2]-androidOrientation[2]).toString()
     }
 
 }

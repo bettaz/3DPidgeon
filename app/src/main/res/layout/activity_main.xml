@@ -79,6 +79,13 @@
         app:layout_constraintTop_toBottomOf="@id/z_axis"
         app:layout_constraintStart_toEndOf="@id/label_roll"
         android:layout_margin="16dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/roll_diff"
+        app:layout_constraintTop_toBottomOf="@id/z_axis"
+        app:layout_constraintStart_toEndOf="@id/roll"
+        android:layout_margin="16dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -95,6 +102,13 @@
         android:id="@+id/pitch"
         app:layout_constraintTop_toBottomOf="@id/roll"
         app:layout_constraintStart_toEndOf="@id/label_roll"
+        android:layout_margin="16dp" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pitch_diff"
+        app:layout_constraintTop_toBottomOf="@id/roll_diff"
+        app:layout_constraintStart_toEndOf="@id/pitch"
         android:layout_margin="16dp" />
 
     <TextView
@@ -113,10 +127,17 @@
         app:layout_constraintTop_toBottomOf="@id/pitch"
         app:layout_constraintStart_toEndOf="@id/label_yaw"
         android:layout_margin="16dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/yaw_diff"
+        app:layout_constraintTop_toBottomOf="@id/pitch_diff"
+        app:layout_constraintStart_toEndOf="@id/yaw"
+        android:layout_margin="16dp" />
 
     <ImageView
-        android:layout_width="350dp"
-        android:layout_height="350dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:id="@+id/compass"
         android:src="@drawable/ic_compass"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,8 +146,8 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="53dp"
+        android:layout_height="53dp"
         android:id="@+id/center_cross"
         android:src="@drawable/ic_center_cross"
         app:layout_constraintStart_toStartOf="parent"
@@ -135,8 +156,8 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageView
-        android:layout_width="170dp"
-        android:layout_height="170dp"
+        android:layout_width="113dp"
+        android:layout_height="113dp"
         android:id="@+id/cross"
         android:src="@drawable/ic_cross"
         app:layout_constraintStart_toStartOf="parent"
