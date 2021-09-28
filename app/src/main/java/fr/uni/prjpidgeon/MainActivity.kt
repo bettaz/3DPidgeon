@@ -50,7 +50,7 @@ class MainActivity : SensorActivity() {
             if(orientation[1].isFinite()) sin(orientation[1]) * 150 else 150f
         ).apply { start() }
 
-        if (orientation[2].isFinite()) {
+        if (orientation[0].isFinite()) {
             binding.yaw.text = (Math.toDegrees(orientation[0].toDouble())).toString()
 
             ObjectAnimator.ofFloat(
@@ -59,9 +59,9 @@ class MainActivity : SensorActivity() {
                 (Math.toDegrees(-orientation[0].toDouble())-90).toFloat()
             ).apply { start() }
         }
-        binding.rollDiff.text = (orientation[0]-androidOrientation[0]).toString()
-        binding.pitchDiff.text = (orientation[1]-androidOrientation[1]).toString()
-        binding.yawDiff.text = (orientation[2]-androidOrientation[2]).toString()
+        binding.rollDiff.text = Math.toDegrees(((orientation[1]-androidOrientation[0]).toDouble())).toString()
+        binding.pitchDiff.text = Math.toDegrees(((orientation[2]-androidOrientation[1]).toDouble())).toString()
+        binding.yawDiff.text = Math.toDegrees(((orientation[0]-androidOrientation[2]).toDouble())).toString()
     }
 
 }

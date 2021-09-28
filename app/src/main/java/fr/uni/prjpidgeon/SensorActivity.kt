@@ -14,7 +14,7 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
     private lateinit var sensorManager: SensorManager
     private lateinit var last_acc_read: FloatArray
     private lateinit var last_magn_read: FloatArray
-    private var D = 0f
+    private var D = 0.04416
     private var a=0f
     private var b=0f
     private var rotationMatrix = FloatArray(16)
@@ -92,9 +92,9 @@ abstract class SensorActivity: AppCompatActivity(), SensorEventListener {
         }
         if (currentTime - lastUpdateTime >= 100) {
             if(this::last_acc_read.isInitialized){
-                estRoll = Math.toDegrees((- asin(last_acc_read[0]/9.81f)).toDouble()).toFloat()
-                estPitch = Math.toDegrees((- atan(last_acc_read[1]/last_acc_read[2])).toDouble()).toFloat()
-                estYaw = D - Math.toDegrees(atan2(a,b).toDouble()).toFloat()
+                estRoll = (- asin(last_acc_read[0]/9.81f))
+                estPitch = (- atan(last_acc_read[1]/last_acc_read[2]))
+                estYaw =  Math.toRadians(D).toFloat() + atan2(a,b)
                 onOrientationChanged(floatArrayOf(estRoll,estPitch,estYaw),androidOrientation,last_acc_read)
                 lastUpdateTime = currentTime
             }
