@@ -13,6 +13,7 @@ import fr.uni.prjpidgeon.databinding.ActivityMainBinding
 import kotlin.math.*
 import kotlin.math.atan
 import android.R
+import android.graphics.drawable.GradientDrawable
 
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -29,39 +30,43 @@ class MainActivity : SensorActivity() {
     }
 
     override fun onAcelerometerChanged(acc: FloatArray) {
-        binding.xAxis.text = acc[0].toString()
-        binding.yAxis.text = acc[1].toString()
-        binding.zAxis.text = acc[2].toString()
+
     }
 
-    override fun onOrientationChanged(androidOrientation: FloatArray, orientation: FloatArray, accReads: FloatArray) {
-
-        binding.roll.text = Math.toDegrees(-orientation[1].toDouble()).toString()
-        ObjectAnimator.ofFloat(
-            binding.centerCross,
-            "translationY",
-            if(orientation[2].isFinite()) sin(-orientation[2]) * 150 else 150f
-        ).apply { start() }
-
-        binding.pitch.text = ((Math.toDegrees(-orientation[2].toDouble())+180)%360).toString()
+    override fun onOrientationChanged(orientation: FloatArray, androidOrientation: FloatArray, accReads: FloatArray) {
+        binding.xAxis.text = accReads[0].toString()
+        binding.yAxis.text = accReads[1].toString()
+        binding.zAxis.text = accReads[2].toString()
+        var androidRoll = Math.toDegrees(androidOrientation[1].toDouble()).toFloat()
+        var myRoll = Math.toDegrees(orientation[0].toDouble()).toFloat()
+        binding.roll.text = myRoll.toString()
         ObjectAnimator.ofFloat(
             binding.centerCross,
             "translationX",
-            if(orientation[1].isFinite()) sin(orientation[1]) * 150 else 150f
+            if(myRoll.isFinite()) myRoll/90 * -150 else 150f
         ).apply { start() }
-
-        if (orientation[0].isFinite()) {
-            binding.yaw.text = (Math.toDegrees(orientation[0].toDouble())).toString()
-
+        var androidPitch = (Math.toDegrees(androidOrientation[2].toDouble()).toFloat())
+        var myPitch = Math.toDegrees(orientation[1].toDouble()).toFloat()
+        binding.pitch.text = myPitch.toString()
+        ObjectAnimator.ofFloat(
+            binding.centerCross,
+            "translationY",
+            if(myPitch.isFinite()) myPitch/90 * -150 else 150f
+        ).apply { start() }
+        var androidYaw = Math.toDegrees(androidOrientation[0].toDouble()).toFloat()
+        var myYaw = Math.toDegrees(orientation[2].toDouble()).toFloat()
+        var myYaw_uncalib = Math.toDegrees(orientation[3].toDouble()).toFloat()
+        binding.yaw.text = myYaw.toString()
+        if (androidYaw.isFinite()) {
             ObjectAnimator.ofFloat(
                 binding.compass,
                 "rotation",
-                (Math.toDegrees(-orientation[0].toDouble())-90).toFloat()
+                if(binding.calibratedSwitch.isChecked) -myYaw else -myYaw_uncalib
             ).apply { start() }
         }
-        binding.rollDiff.text = Math.toDegrees(((orientation[1]-androidOrientation[0]).toDouble())).toString()
-        binding.pitchDiff.text = Math.toDegrees(((orientation[2]-androidOrientation[1]).toDouble())).toString()
-        binding.yawDiff.text = Math.toDegrees(((orientation[0]-androidOrientation[2]).toDouble())).toString()
+        binding.rollDiff.text = (androidRoll-myRoll).toString()
+        binding.pitchDiff.text = (androidPitch-myPitch).toString()
+        binding.yawDiff.text = (androidYaw- myYaw).toString()
     }
 
 }
